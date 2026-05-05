@@ -93,7 +93,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = trimspace(var.ssh_public_key)
+    public_key = replace(replace(trimspace(var.ssh_public_key), "\n", ""), "\r", "")
   }
 
   os_disk {
