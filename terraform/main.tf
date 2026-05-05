@@ -85,7 +85,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                = "vm-sparks"
   resource_group_name = azurerm_resource_group.sparks.name
   location            = azurerm_resource_group.sparks.location
-  size                = "Standard_B1s"
+  size                = "Standard_D2s_v3"
   admin_username      = "adminuser"
   network_interface_ids = [
     azurerm_network_interface.nic.id,
