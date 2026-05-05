@@ -21,23 +21,6 @@ jobs:
           npm install
           npm run build
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
-
-      - name: Terraform Init & Apply
-        working-directory: ./terraform
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          TF_VAR_ssh_public_key: "${{ secrets.SSH_PUBLIC_KEY }}"
-        run: |
-          terraform init
-          terraform apply -auto-approve
-
       - name: Create SSH Key for Ansible
         run: |
           cat <<EOF > private_key
@@ -45,17 +28,12 @@ jobs:
           EOF
           chmod 600 private_key
 
-      - name: Get Public IP
-        id: get_ip
-        working-directory: ./terraform
-        run: echo "PUBLIC_IP=$(terraform output -raw public_ip)" >> $GITHUB_ENV
-
       - name: Run Ansible Playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansible/playbook.yml
           inventory: |
             [all]
-            ${{ env.PUBLIC_IP }} ansible_user=adminuser ansible_ssh_private_key_file=./private_key
+            ${{ secrets.VM_IP }} ansible_user=adminuser ansible_ssh_private_key_file=./private_key
           options: |
             --extra-vars "ansible_ssh_common_args='-o StrictHostKeyChecking=no'"
