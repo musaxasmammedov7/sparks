@@ -40,7 +40,9 @@ jobs:
 
       - name: Create SSH Key for Ansible
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          cat <<EOF > private_key
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
           chmod 600 private_key
 
       - name: Get Public IP
