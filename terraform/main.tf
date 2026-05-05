@@ -77,6 +77,10 @@ resource "azurerm_network_interface_security_group_association" "nsg_assoc" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
+variable "ssh_public_key" {
+  description = "Public SSH key for the VM"
+}
+
 resource "azurerm_linux_virtual_machine" "vm" {
   name                = "vm-sparks"
   resource_group_name = azurerm_resource_group.sparks.name
@@ -89,7 +93,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.ssh_public_key
   }
 
   os_disk {
